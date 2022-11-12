@@ -36,6 +36,7 @@ import {
   from,
   reduce,
   distinctUntilChanged,
+  Subject,
 } from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 import { loadPosts, loadUsers } from "./api.service";
@@ -93,7 +94,15 @@ class UserList {
   }
 
   // ! `listItemClicked$` should be a stream which tracks whenever a li element has been clicked and emits the element itself
-  listItemClick$ = of();
+  listItemClick$ = fromEvent(document, "click")
+    .pipe(
+      filter((event: any) => {
+        const clickTarget = event.target as HTMLElement;
+        return clickTarget.tagName === "LI";
+      }),
+      map((event) => event.target)
+    )
+    .subscribe();
 }
 
 class UserPostsList {
